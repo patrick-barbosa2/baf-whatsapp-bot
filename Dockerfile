@@ -1,14 +1,13 @@
 FROM node:18
 
-# Instalar TypeScript (necessário) e WAHA via GitHub
-RUN npm install -g typescript
-RUN npm install -g github:devlikeapro/waha
+# Instalar n8n globalmente
+RUN npm install -g n8n
 
 # Criar diretório de trabalho
 WORKDIR /app
 
-# Expor porta padrão do WAHA
-EXPOSE 3000
+# Expor porta padrão do n8n
+EXPOSE 5678
 
-# Rodar WAHA
-CMD ["npx", "waha"]
+# Rodar o n8n
+CMD ["n8n"]
