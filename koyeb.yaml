@@ -1,7 +1,7 @@
 name: baf-whatsapp-bot
 
 services:
-  - name: baf-service
+  - name: whatsapp-finance-assistant
     dockerfile_path: Dockerfile
     ports:
       - internal_port: 3000
@@ -9,19 +9,21 @@ services:
       - internal_port: 5678
         protocol: HTTP
     resources:
-      cpus: 1
-      memory: 2048
+      cpus: 2
+      memory: 4096
     envs:
       - key: WAHA_API_KEY
         value: 123456
       - key: N8N_PORT
         value: 5678
+      - key: GENERIC_TIMEZONE
+        value: America/Sao_Paulo
+    volumes:
+      - name: app-data
+        mount_path: /data
+        type: persistent
     healthchecks:
       readiness:
         http:
           path: /api/sessions
           port: 3000
-      liveness:
-        http:
-          path: /
-          port: 5678

@@ -1,39 +1,38 @@
 #!/bin/bash
 set -e
 
-echo "Iniciando serviços..."
-
-# Definir variáveis de ambiente caso não estejam definidas
-export N8N_PORT=${N8N_PORT:-5678}
+# Configurações e variáveis
 export WAHA_API_KEY=${WAHA_API_KEY:-123456}
+export N8N_PORT=${N8N_PORT:-5678}
 
-echo "Verificando dependências..."
-which tsc || { echo "TypeScript não instalado corretamente"; exit 1; }
+echo "=== Iniciando Assistente Financeiro WhatsApp ==="
 
-echo "Iniciando WAHA em background..."
-npx waha >> /app/logs/waha.log 2>&1 &
+# Iniciar WAHA em background (usando script já presente na imagem)
+echo "Iniciando WAHA API..."
+cd /usr/src/waha
+node ./build/bin/start.js start --session=whatsapp > /app/logs/waha.log 2>&1 &
 WAHA_PID=$!
 
-echo "Aguardando WAHA inicializar (15s)..."
-sleep 15
+# Aguardar WAHA inicializar
+echo "Aguardando WAHA inicializar (10s)..."
+sleep 10
 
-# Verificar se WAHA está respondendo
+# Verificar se WAHA está rodando
 if ! ps -p $WAHA_PID > /dev/null; then
-  echo "❌ WAHA falhou ao iniciar. Verificando logs:"
-  tail -n 50 /app/logs/waha.log
+  echo "❌ WAHA falhou ao iniciar. Log:"
+  cat /app/logs/waha.log
   exit 1
 fi
 
-# Verificar API do WAHA
+# Testar API do WAHA
 echo "Testando API do WAHA..."
 curl -s -o /dev/null -w "%{http_code}" http://localhost:3000/api/sessions || {
-  echo "❌ API do WAHA não está respondendo. Verificando logs:"
-  tail -n 50 /app/logs/waha.log
+  echo "❌ API do WAHA não está respondendo!"
   exit 1
 }
 
-echo "✅ WAHA iniciado com sucesso!"
-echo "Iniciando n8n..."
+echo "✅ WAHA inicializado com sucesso na porta 3000"
 
 # Iniciar n8n em foreground
+echo "Iniciando n8n na porta $N8N_PORT..."
 n8n start
