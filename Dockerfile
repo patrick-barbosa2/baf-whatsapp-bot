@@ -1,18 +1,23 @@
+# Dockerfile WAHA corrigido
 FROM node:18
 
-# Instalar dependências globais necessárias
+# Instala TypeScript globalmente
 RUN npm install -g typescript
 
-# Clonar o WAHA
+# Clona o projeto WAHA
 RUN git clone https://github.com/devlikeapro/waha.git /app
+
+# Define diretório
 WORKDIR /app
 
-# Instalar dependências e compilar
-RUN npm install
+# Força instalação ignorando conflitos de peer dependencies
+RUN npm install --legacy-peer-deps
+
+# Compila o projeto
 RUN npm run build
 
-# Expor porta padrão
+# Expõe a porta padrão do WAHA
 EXPOSE 3000
 
-# Rodar app compilado
+# Inicia o servidor
 CMD ["node", "dist/main"]
