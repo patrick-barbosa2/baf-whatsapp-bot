@@ -1,13 +1,10 @@
 FROM node:18
 
-# Instala TypeScript primeiro
-RUN npm install -g typescript@5.3.3
-
-# Instala n8n específico
+# Instala n8n
 RUN npm install -g n8n@1.46.0
 
-# Instala WAHA
-RUN npm install -g github:devlikeapro/waha
+# Instala WAHA de uma versão específica (tag) que já está compilada
+RUN npm install -g github:devlikeapro/waha#v2024.04.18
 
 # Configurar diretórios e app
 WORKDIR /app
