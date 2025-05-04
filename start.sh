@@ -1,7 +1,7 @@
 #!/bin/bash
 
-echo "Iniciando WAHA..."
-waha &
+# Iniciar WAHA
+npx waha &
 
-echo "Iniciando n8n..."
+# Iniciar n8n
 n8n
