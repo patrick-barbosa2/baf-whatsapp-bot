@@ -1,13 +1,12 @@
 FROM node:18
 
-RUN npm install -g n8n devlikeapro/waha
-
 WORKDIR /app
 
-COPY start.sh .
+COPY . .
 
-RUN chmod +x start.sh
+RUN npm install
 
-EXPOSE 3000 5678
+EXPOSE 3000
+EXPOSE 5678
 
-CMD ["./start.sh"]
+CMD ["npm", "run", "start"]
