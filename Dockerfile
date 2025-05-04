@@ -18,7 +18,9 @@ RUN npm install -g n8n@1.46.0
 # Clonar WAHA do GitHub
 RUN git clone https://github.com/devlikeapro/waha.git /app/waha
 WORKDIR /app/waha
-RUN npm install && \
+
+# Modificado: Adicionando flag --legacy-peer-deps
+RUN npm install --legacy-peer-deps && \
     npm run build
 
 # Voltar ao diretório de trabalho principal
