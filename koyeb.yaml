@@ -1,12 +1,15 @@
-name: baf-bot
+name: baf-whatsapp-bot
+
 services:
-  - name: whatsapp
-    dockerfile_path: ./Dockerfile
+  - name: baf-service
+    dockerfile_path: Dockerfile
     ports:
       - internal_port: 3000
         protocol: HTTP
       - internal_port: 5678
         protocol: HTTP
-    env:
-      WAHA_API_KEY: "123456"
-      N8N_PORT: "5678"
+    envs:
+      - key: WAHA_API_KEY
+        value: 123456
+      - key: N8N_PORT
+        value: 5678
