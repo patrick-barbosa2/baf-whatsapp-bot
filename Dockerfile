@@ -1,62 +1,37 @@
-FROM node:18-slim
-
-# Instalar dependências
-RUN apt-get update && apt-get install -y \
-    curl \
-    git \
-    ffmpeg \
-    chromium \
-    && rm -rf /var/lib/apt/lists/*
-
-# Configurar diretórios de trabalho
-WORKDIR /app
-RUN mkdir -p /app/logs /data/n8n /data/waha
+# Usar a imagem oficial do WAHA como base
+FROM devlikeapro/waha:latest
 
 # Instalar n8n
 RUN npm install -g n8n@1.46.0
 
-# Clonar WAHA do GitHub
-RUN git clone https://github.com/devlikeapro/waha.git /app/waha
-WORKDIR /app/waha
-
-# Modificado: Adicionando flag --legacy-peer-deps
-RUN npm install --legacy-peer-deps && \
-    npm run build
-
-# Voltar ao diretório de trabalho principal
-WORKDIR /app
-
-# Criar script de inicialização simples
+# Criar script de inicialização para ambiente Koyeb
 RUN echo '#!/bin/bash\n\
-echo "=== Iniciando Assistente Financeiro WhatsApp ==="\n\
+echo "=== Iniciando Assistente Financeiro WhatsApp no Koyeb ==="\n\
 \n\
-# Iniciar WAHA\n\
+# Iniciar WAHA em background (a imagem oficial do WAHA não inicia automaticamente no Koyeb)\n\
 echo "Iniciando WAHA API..."\n\
-cd /app/waha\n\
-node ./build/bin/start.js start --session=whatsapp > /app/logs/waha.log 2>&1 &\n\
+cd /app && node build/bin/start.js start --session=whatsapp > /app/waha.log 2>&1 &\n\
 \n\
-# Aguardar inicialização\n\
-echo "Aguardando inicialização (15s)..."\n\
+# Aguardar WAHA inicializar\n\
+echo "Aguardando WAHA inicializar (15s)..."\n\
 sleep 15\n\
 \n\
-# Iniciar n8n\n\
+# Iniciar n8n em foreground (necessário para o Koyeb)\n\
 echo "Iniciando n8n..."\n\
 n8n start\n\
-' > /app/start.sh
+' > /app/koyeb-start.sh
 
 # Tornar o script executável
-RUN chmod +x /app/start.sh
+RUN chmod +x /app/koyeb-start.sh
 
 # Variáveis de ambiente
 ENV WAHA_API_KEY=123456
-ENV WAHA_START_SESSION=whatsapp
 ENV N8N_PORT=5678
 ENV NODE_ENV=production
-ENV N8N_PATH=/data/n8n
 ENV N8N_HOST=0.0.0.0
 
-# Expor portas
+# Expor portas - o Koyeb exporá estas portas automaticamente
 EXPOSE 3000 5678
 
-# Comando de inicialização
-CMD ["/app/start.sh"]
+# Comando de inicialização específico para Koyeb
+CMD ["/app/koyeb-start.sh"]
