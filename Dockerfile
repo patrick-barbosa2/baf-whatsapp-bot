@@ -1,29 +1,19 @@
 FROM node:18
 
-# Atualiza npm para evitar warns
-RUN npm install -g npm@11.3.0
-
-# Instala dependências em passos separados para melhor caching e debug
+# Instala TypeScript primeiro
 RUN npm install -g typescript@5.3.3
+
+# Instala n8n específico
 RUN npm install -g n8n@1.46.0
 
-# Instala WAHA com verificação explícita de typescript
-RUN npm install -g typescript && \
-    which tsc && \
-    npm install -g github:devlikeapro/waha
+# Instala WAHA
+RUN npm install -g github:devlikeapro/waha
 
-# Cria diretórios de logs e garante permissões
-RUN mkdir -p /app/logs /tmp/n8n /tmp/waha && \
-    chmod -R 777 /app/logs /tmp/n8n /tmp/waha
-
-# Copia app e define ponto de entrada
+# Configurar diretórios e app
 WORKDIR /app
 COPY start.sh .
 RUN chmod +x start.sh
-
-# Configuração de ambiente para n8n e waha
-ENV N8N_PORT=5678
-ENV WAHA_API_KEY=123456
+RUN mkdir -p /app/logs
 
 # Expõe portas
 EXPOSE 3000 5678
