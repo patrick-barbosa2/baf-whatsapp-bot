@@ -1,13 +1,17 @@
 FROM node:18
 
-# Instalar n8n globalmente
+# Instala o n8n
 RUN npm install -g n8n
 
-# Criar diretório de trabalho
+# Cria diretório de trabalho
 WORKDIR /app
 
-# Expor porta padrão do n8n
+# Copia o script de start
+COPY start.sh /start.sh
+RUN chmod +x /start.sh
+
+# Porta default do n8n
 EXPOSE 5678
 
-# Rodar o n8n
-CMD ["n8n"]
+# Usa script como entrada
+CMD ["/start.sh"]
